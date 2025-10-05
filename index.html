@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Snake</title>
+<style>
+body {
+overflow: hidden;
+}
+
+canvas {
+position: absolute;
+top: 0;
+left: 0;
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+const canvas = document.getElementById("canvas");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+const ctx = canvas.getContext("2d");
+
+let size = 11;
+let boxSize = size * 20 + 5;
+
+let soul = [[0, 0]];
+let apple = [Math.floor(Math.random() * 11) - 5, Math.floor(Math.random() * 11) - 5];
+let direction = 2.5;
+//let speed = 135;
+let speed = 200;
+let gameOver = false;
+
+let soulImg = new Image();
+soulImg.src = "data:image/webp;base64,UklGRgICAABXRUJQVlA4TPYBAAAvr8QrES8Q4x9iwaRv/oyJhMIACLFtx21kBpYTAmlLYCPQRmZg8eejeaPuPhH9n4ASdD16zn0pX6jr0XPuSwnKf/zHf/zHf/zHf/zHf/x3Gm2tQ96ibDXorNSgtyhbHXJJ8tzG7Elb0LdlTtZ7C9qTtjEvSd77xO+zcvSJv/If//Ef//Ef//Ef//Ef/53uqGN+TN1Wh1ySrHXI29Q91THbmMfM9TbmJclzG7PP/N7G7F+E1yTv/YuQ//iP//iP//iP//iP//iP//iP//iP//iP//iP//iP/07RPNWgHz8L9hb06D9W+Y//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+I//+O90R0v6HdSS1qC34/tn32rQEnT9DlpKUP7jP/7jP/7jP/7jP/7jP/7jP/7jP/7jP/7jP/7jP/47z3FvQb9WWtC3SSk16O34Stm3GrR8etevlaUE5T/+4z/+4z/+4z/+4z/+4z/+4z/+4z/+4z/+4z/+47+zL/cWdFZa0LcvlVKD3o452bcatHzRr7OylKD8x3/8x3/8x3/8x3/8x3/8x3/8x3/8x3/8x3/8x3/8dyoO";
+
+function renderSoul() {
+for (let segment of soul) {
+let left = false;
+let right = false;
+for (let segment2 of soul) {
+if (segment[0] == segment2[0] - 1 && segment[1] == segment2[1]) {
+left = true;
+}
+if (segment[0] == segment2[0] + 1 && segment[1] == segment2[1]) {
+right = true;
+}
+/*if (left && right) {
+
+} else if (left) {
+
+} else if (right) {
+
+} else */{
+ctx.drawImage(soulImg, innerWidth / 2 - 10 + segment[0] * 20, innerHeight / 2 - 10 + segment[1] * 20, 20, 20);
+//ctx.drawImage(soulImg, innerWidth / 2 - 10 + segment[0] * 20, innerHeight / 2 - 10 + segment[1] * 20, 40, 20);
+}
+}
+}
+}
+
+function die() {
+clearInterval(move);
+gameOver = true;
+}
+
+function update() {
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "black";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+renderSoul();
+ctx.lineWidth = 5;
+if (soul.length >= 2) {
+soul.pop();
+soul.unshift([...soul[0]]);
+}
+if (direction === 1) {
+soul[0][1] -= 1;
+}
+if (direction === 2) {
+soul[0][1] += 1;
+}
+if (direction === 3) {
+soul[0][0] -= 1;
+}
+if (direction === 4) {
+soul[0][0] += 1;
+}
+
+if (Math.abs(soul[0][0]) == 6 || Math.abs(soul[0][1]) == 6) {
+die();
+}
+
+for (let segment of soul) {
+if (soul[0][0] == segment[0] && soul[0][1] == segment[1] && soul[0] != segment) {
+die();
+}
+}
+
+console.log(JSON.stringify(soul));
+ctx.fillStyle = "#fe0000";
+ctx.fillRect(innerWidth / 2 - 10 + apple[0] * 20, innerHeight / 2 - 10 + apple[1] * 20, 20, 20);
+if (soul[0][0] == apple[0] && soul[0][1] == apple[1]) {
+apple = [Math.floor(Math.random() * 11) - 5, Math.floor(Math.random() * 11) - 5];
+soul.push([]);
+}
+ctx.strokeStyle = "#04d700";
+ctx.strokeRect(innerWidth / 2 - boxSize / 2, innerHeight / 2 - boxSize / 2, boxSize, boxSize);
+}
+
+update();
+let move;
+
+function updateDir() {
+update();
+clearInterval(move);
+}
+
+addEventListener("keydown", (event) => {
+if (!gameOver) {
+if (event.key === "ArrowUp" && direction > 2) {
+direction = 1;
+updateDir();
+move = setInterval(update, speed);
+}
+if (event.key === "ArrowDown" && direction > 2) {
+direction = 2;
+updateDir();
+move = setInterval(update, speed);
+}
+if (event.key === "ArrowLeft" && direction < 3) {
+direction = 3;
+updateDir();
+move = setInterval(update, speed);
+}
+if (event.key === "ArrowRight" && direction < 3) {
+direction = 4;
+updateDir();
+move = setInterval(update, speed);
+}
+}
+});
+</script>
+
+</body>
+</html>
