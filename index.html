@@ -109,7 +109,9 @@ ctx.strokeStyle = "#04d700";
 ctx.strokeRect(innerWidth / 2 - boxSize / 2, innerHeight / 2 - boxSize / 2, boxSize, boxSize);
 }
 
+soulImg.onload = () => {
 update();
+}
 let move;
 
 function updateDir() {
